@@ -41,13 +41,15 @@ export default grammar({
     // DD: 01-31
     day: $ => token(choice( seq(optional('0'), /[1-9]/), seq(/[1-2]/, /\d/), seq('3', /[01]/))),
 
-    id: $=> /[a-zA-X][a-z0-9A-Z_]*/,
+    resource_id: $ => /[a-zA-Z][a-z0-9A-Z_]*/,
+    task_id: $ => /[a-zA-Z][a-z0-9A-Z_]*/,
+    //id: $=> /[a-zA-X][a-z0-9A-Z_]*/,
     taskname: $=> $.string,
     complete: $=> seq(kw('complete'), $._decimal),
     priority:$=> seq(kw('priority'), $._decimal),
     timeunit:$=> choice('h','d','w','m','y'),
     effort:$=> seq(kw('effort'),$._decimal, $.timeunit),
-    taskpath:$=>seq(optional('!'),mklist1('.',$.id)),
+    taskpath:$=>seq(optional(field('absolute','!')),mklist1('.',$.id)),
     depends:$=>seq(kw('depends'), mklist1(',',$.taskpath)),
     macro :$=> seq('$','{',$.id,'}'),
     allocate:$=> seq(kw('allocate'),choice($.id,$.macro)),
@@ -56,7 +58,7 @@ export default grammar({
     end:$=> seq(kw('end'),$.date),
     minstart:$=> seq(kw('minstart'),$.date),
     maxend:$=> seq(kw('maxend'),$.date),
-    scenario:$=>seq($.id,':',$.attribute),
+    scenario:$=>seq(field('name',$.id),':',field('value',$.attribute)),
     attribute:$=>choice($.complete,$.priority,$.effort,$.depends,$.macro,$.allocate,$.journalentry,$.start,$.end,$.minstart,$.maxend,$.scenario),
     task: $=> seq(kw('task'), $.id, $.taskname, '{', repeat(choice($.attribute,$.task)), '}'),
   }
