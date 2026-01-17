@@ -28,7 +28,7 @@ export default grammar({
       token(
         choice(seq("//", /.*/), seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/")),
       ),
-    _decimal: $ =>/[0-9_\.]+/,
+    decimal: $ =>/[0-9_\.]+/,
 
     date: ($) => seq(
       field('year', $.year),
@@ -49,10 +49,10 @@ export default grammar({
 
     taskname: $=> $.string,
     // Attributes mapped to potential CIF semantic entities
-    complete: ($) => seq(kw('complete'), field('value', $._decimal)),
-    priority: ($) => seq(kw('priority'), field('value', $._decimal)),
+    complete: ($) => seq(kw('complete'), field('value', $.decimal)),
+    priority: ($) => seq(kw('priority'), field('value', $.decimal)),
     timeunit: ($) => choice('h', 'd', 'w', 'm', 'y'),
-    effort: ($) => seq(kw('effort'), field('value', $._decimal), field('unit', $.timeunit)),
+    effort: ($) => seq(kw('effort'), field('value', $.decimal), field('unit', $.timeunit)),
 
     // Taskpath needs to handle the UTS concept of global vs relative addressing
     taskpath: ($) => seq(
