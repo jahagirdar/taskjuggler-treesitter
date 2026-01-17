@@ -98,7 +98,7 @@ export default grammar({
       $.end,
       $.minstart,
       $.maxend,
-      $.scenario
+      $.scenario,
       $.milestone
     ),
 
