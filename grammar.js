@@ -74,6 +74,8 @@ export default grammar({
       '{', '}'
     ),
 
+    flag: ($) => seq ( kw('flags'), mklist1(',',field('flagid',$.string))),
+
     start: ($) => seq(kw('start'), field('date', $.date)),
     end: ($) => seq(kw('end'), field('date', $.date)),
     minstart: ($) => seq(kw('minstart'), field('date', $.date)),
@@ -96,6 +98,7 @@ export default grammar({
       $.allocate,
       $.journalentry,
       $.note,
+      $.flag,
       $.start,
       $.end,
       $.minstart,
