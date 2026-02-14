@@ -66,6 +66,7 @@ export default grammar({
     // Distinguish between raw IDs and macros for allocations
     allocate: ($) => seq(kw('allocate'), choice(field('resource', $.resource_id), $.macro)),
 
+    note: ($) => seq (kw('note'), field('text',$.string)),
     journalentry: ($) => seq(
       kw('journalentry'),
       field('date', $.date),
@@ -94,6 +95,7 @@ export default grammar({
       $.macro,
       $.allocate,
       $.journalentry,
+      $.note,
       $.start,
       $.end,
       $.minstart,
