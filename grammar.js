@@ -10,10 +10,15 @@
 const mklist1 =(sep,rule) => seq(rule,repeat(seq(sep,rule)));
 const mklist =(sep,rule) => optional(mklist1(sep,rule));
 function kw(word) {
-  return alias(token(word), word);
+  return alias(token(prec(10,word)), word);
 };
 export default grammar({
   name: "taskjuggler",
+    word: $ => $.identifier,  // Add this
+
+  conflicts: $ => [
+    [$.task_id],  // May need to add more here
+  ],
 
   extras: ($) => [
     /\s/, // whitespace
@@ -42,10 +47,12 @@ export default grammar({
     month: $ => token(choice( seq(optional('0'), /[1-9]/), seq('1', /[0-2]/))),
     day: $ => token(choice( seq(optional('0'), /[1-9]/), seq(/[1-2]/, /\d/), seq('3', /[01]/))),
 
-    task_id: ($) => /[a-zA-X][a-z0-9A-Z_]*/,
-    resource_id: ($) => /[a-zA-X][a-z0-9A-Z_]*/,
-    macro_id: ($) => /[a-zA-X][a-z0-9A-Z_]*/,
-    scenario_id: ($) => /[a-zA-X][a-z0-9A-Z_]*/,
+        identifier: $ => /[a-zA-X][a-z0-9A-Z_]*/,
+    task_id: ($) => $.identifier,
+    resource_id: ($) => $.identifier,
+    macro_id: ($) => $.identifier,
+    scenario_id: ($) => $.identifier,
+    flag_id: ($) => $.identifier,
 
     taskname: $=> $.string,
     // Attributes mapped to potential CIF semantic entities
@@ -74,7 +81,8 @@ export default grammar({
       '{', '}'
     ),
 
-    flag: ($) => seq ( kw('flags'), mklist1(',',field('flagid',$.string))),
+    // flags: ($) => seq ( kw('flags'), mklist1(',',field('flagid',$.flag_id))),
+    flags: ($) => seq ( kw('flags'), field('flagid',$.flag_id)),
 
     start: ($) => seq(kw('start'), field('date', $.date)),
     end: ($) => seq(kw('end'), field('date', $.date)),
@@ -98,7 +106,7 @@ export default grammar({
       $.allocate,
       $.journalentry,
       $.note,
-      $.flag,
+      prec(2,$.flags),
       $.start,
       $.end,
       $.minstart,
